@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getWasteHistory, clearWasteHistory } from '../services/api';
+import { getWasteHistory, clearWasteHistory, deleteWasteEntry } from '../services/api';
 import { format } from 'date-fns';
 
 function WasteHistory({ refreshKey }) {
@@ -41,6 +41,19 @@ function WasteHistory({ refreshKey }) {
       console.error(err);
     } finally {
       setClearing(false);
+    }
+  };
+
+  const handleDeleteEntry = async (entryId) => {
+    try {
+      // optimistic update
+      setHistory(prev => prev.filter(h => h.id !== entryId));
+      await deleteWasteEntry(entryId);
+    } catch (err) {
+      // revert on error by reloading
+      await loadHistory();
+      setError('Failed to delete entry');
+      console.error(err);
     }
   };
 
@@ -198,6 +211,23 @@ function WasteHistory({ refreshKey }) {
                     <strong>Notes:</strong> {entry.notes}
                   </div>
                 )}
+
+                {entry.consistency_note && (
+                  <div className="mt-1 text-xs text-gray-500">
+                    {entry.consistency_note}
+                  </div>
+                )}
+
+                <div className="mt-4 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteEntry(entry.id)}
+                    className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700"
+                    title="Delete this entry"
+                  >
+                    🗑️ Delete entry
+                  </button>
+                </div>
               </div>
             </div>
           </div>

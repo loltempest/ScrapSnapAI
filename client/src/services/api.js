@@ -40,6 +40,11 @@ export async function clearWasteHistory() {
   return response.data;
 }
 
+export async function deleteWasteEntry(id) {
+  const response = await axios.delete(`${API_BASE_URL}/waste-history/${id}`);
+  return response.data;
+}
+
 
 
 

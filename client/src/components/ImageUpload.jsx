@@ -344,6 +344,21 @@ function ImageUpload({ onSuccess }) {
                     <strong>Notes:</strong> {result.analysis.notes}
                   </div>
                 )}
+                {typeof result.analysis.confidence === 'number' && (
+                  <div>
+                    <strong>Confidence:</strong> {(result.analysis.confidence * 100).toFixed(0)}%
+                  </div>
+                )}
+                {result.analysis.uncertaintyDisclaimer && (
+                  <div className="text-yellow-800">
+                    <strong>Disclaimer:</strong> {result.analysis.uncertaintyDisclaimer}
+                  </div>
+                )}
+                {result.analysis.needsBetterPhoto && (
+                  <div className="text-yellow-700">
+                    📷 Please upload a clearer photo (reduce glare, avoid reflections, focus subject).
+                  </div>
+                )}
               </div>
             </div>
           )}

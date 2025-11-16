@@ -4,7 +4,7 @@ import multer from 'multer';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { analyzeFoodWaste } from './ai/vision.js';
-import { initDatabase, logWaste, getWasteHistory, getWasteStats, getSuggestions, findEntryByImageHash, clearAllWasteData } from './database/db.js';
+import { initDatabase, logWaste, getWasteHistory, getWasteStats, getSuggestions, findEntryByImageHash, deleteEntryById, clearAllWasteData } from './database/db.js';
 import dotenv from 'dotenv';
 import { createHash } from 'crypto';
 
@@ -179,6 +179,20 @@ app.get('/api/suggestions', async (req, res) => {
   } catch (error) {
     console.error('Error fetching suggestions:', error);
     res.status(500).json({ error: 'Failed to fetch suggestions' });
+  }
+});
+
+app.delete('/api/waste-history/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = deleteEntryById(id);
+    if (!result.success) {
+      return res.status(404).json({ error: result.message });
+    }
+    return res.json(result);
+  } catch (error) {
+    console.error('Error deleting waste entry:', error);
+    return res.status(500).json({ error: 'Failed to delete entry' });
   }
 });
 

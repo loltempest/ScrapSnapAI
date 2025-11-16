@@ -315,6 +315,20 @@ export function findEntryByImageHash(imageHash) {
   return { ...entry, items };
 }
 
+export function deleteEntryById(entryId) {
+  const id = Number(entryId);
+  const index = data.entries.findIndex(e => e.id === id);
+  if (index === -1) {
+    return { success: false, message: `Entry #${id} not found` };
+  }
+  // Remove items for this entry
+  data.items = data.items.filter(item => item.waste_entry_id !== id);
+  // Remove the entry itself
+  data.entries.splice(index, 1);
+  saveData();
+  return { success: true, message: `Entry #${id} deleted` };
+}
+
 export function clearAllWasteData() {
   data = {
     entries: [],
