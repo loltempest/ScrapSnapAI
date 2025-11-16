@@ -146,7 +146,7 @@ function Suggestions() {
           </p>
         </div>
 
-        <div id="suggestions-section" className="bg-green-50 border border-green-200 rounded-lg p-6 mt-6">
+        <div  className="bg-green-50 border border-green-200 rounded-lg p-6 mt-6">
           <h3 className="font-semibold text-green-900 mb-2">
             💚 How These Suggestions Work
           </h3>
@@ -188,7 +188,8 @@ function Suggestions() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
+      <div  id="suggestions-section"
+            className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold text-gray-900">
           AI Suggestions
         </h2>
@@ -245,8 +246,7 @@ function Suggestions() {
         ))}
       </div>
 
-      <div  id="suggestions-section"
-            className="bg-green-50 border border-green-200 rounded-lg p-6 mt-6">
+      <div className="bg-green-50 border border-green-200 rounded-lg p-6 mt-6">
         <h3 className="font-semibold text-green-900 mb-2">
           💚 How These Suggestions Work
         </h3>

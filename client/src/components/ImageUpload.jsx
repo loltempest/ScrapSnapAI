@@ -170,7 +170,7 @@ function ImageUpload({ onSuccess }) {
     <div className="max-w-2xl mx-auto">
       <div  id="upload-section"
             className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4 justify-center flex">
           Upload Food Waste Photo
         </h2>
         
