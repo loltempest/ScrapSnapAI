@@ -4,8 +4,9 @@ import multer from 'multer';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { analyzeFoodWaste } from './ai/vision.js';
-import { initDatabase, logWaste, getWasteHistory, getWasteStats, getSuggestions } from './database/db.js';
+import { initDatabase, logWaste, getWasteHistory, getWasteStats, getSuggestions, findEntryByImageHash } from './database/db.js';
 import dotenv from 'dotenv';
+import { createHash } from 'crypto';
 
 dotenv.config();
 
@@ -70,7 +71,47 @@ app.post('/api/analyze-waste', upload.single('image'), async (req, res) => {
     }
 
     const imagePath = req.file.path;
-    const analysis = await analyzeFoodWaste(imagePath);
+    // Compute hash for deduplication/consistency
+    const buffer = await (await import('fs/promises')).readFile(imagePath);
+    const imageHash = createHash('sha256').update(buffer).digest('hex');
+
+    // If duplicate image seen before, prefer previous consistent values
+    const previous = findEntryByImageHash(imageHash);
+    let analysis = await analyzeFoodWaste(imagePath);
+
+    let duplicateOfEntryId = null;
+    let consistencyNote = '';
+    if (previous) {
+      duplicateOfEntryId = previous.id || null;
+      // Reuse monetary totals and item values for consistency
+      // Keep latest qualitative notes from current analysis but align values
+      if (previous.items && previous.items.length > 0) {
+        // Map previous items by name for best-effort alignment
+        const prevByName = new Map(previous.items.map(it => [it.name?.toLowerCase?.() || '', it]));
+        analysis.items = analysis.items.map(it => {
+          const key = (it.name || '').toLowerCase();
+          const prev = prevByName.get(key);
+          return {
+            ...it,
+            estimatedValue: prev?.estimatedValue ?? it.estimatedValue
+          };
+        });
+      }
+      // Recompute total to match previous total if significantly close
+      const currentTotal = analysis.items.reduce((s, it) => s + (it.estimatedValue || 0), 0);
+      const previousTotal = parseFloat(previous.total_estimated_value || 0);
+      if (previousTotal > 0) {
+        analysis.totalEstimatedValue = previousTotal;
+        consistencyNote = `Values aligned with duplicate of entry #${previous.id} for consistency.`;
+      } else {
+        // Otherwise, round to nearest $0.10 for stability
+        analysis.totalEstimatedValue = Math.round(currentTotal * 10) / 10;
+      }
+    } else {
+      // First time: round total to nearest $0.10 for stability
+      const currentTotal = analysis.items.reduce((s, it) => s + (it.estimatedValue || 0), 0);
+      analysis.totalEstimatedValue = Math.round(currentTotal * 10) / 10;
+    }
 
     // Log the waste entry
     const wasteEntry = await logWaste({
@@ -78,7 +119,10 @@ app.post('/api/analyze-waste', upload.single('image'), async (req, res) => {
       items: analysis.items || [],
       estimatedWaste: analysis.estimatedWaste || {},
       timestamp: new Date().toISOString(),
-      notes: analysis.notes || ''
+      notes: [analysis.notes || '', consistencyNote].filter(Boolean).join(' ').trim(),
+      imageHash,
+      duplicateOfEntryId,
+      consistencyNote
     });
 
     res.json({

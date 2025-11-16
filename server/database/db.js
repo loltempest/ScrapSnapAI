@@ -50,7 +50,7 @@ function saveData() {
 }
 
 export function logWaste(wasteData) {
-  const { imagePath, items, estimatedWaste, timestamp, notes } = wasteData;
+  const { imagePath, items, estimatedWaste, timestamp, notes, imageHash, duplicateOfEntryId, consistencyNote } = wasteData;
   
   const totalValue = items.reduce((sum, item) => sum + (item.estimatedValue || 0), 0);
 
@@ -62,6 +62,9 @@ export function logWaste(wasteData) {
     total_estimated_value: totalValue,
     estimated_weight: estimatedWaste?.weight || '',
     notes: notes || '',
+    image_hash: imageHash || '',
+    duplicate_of_entry_id: duplicateOfEntryId || null,
+    consistency_note: consistencyNote || '',
     created_at: new Date().toISOString()
   };
 
@@ -290,4 +293,24 @@ export function getSuggestions() {
     const priorityOrder = { high: 3, medium: 2, low: 1 };
     return priorityOrder[b.priority] - priorityOrder[a.priority];
   });
+}
+
+export function findEntryByImageHash(imageHash) {
+  if (!imageHash) return null;
+  const entries = [...data.entries]
+    .filter(e => e.image_hash === imageHash)
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  if (entries.length === 0) return null;
+  const entry = entries[0];
+  const items = data.items
+    .filter(item => item.waste_entry_id === entry.id)
+    .map(item => ({
+      id: item.id,
+      name: item.name,
+      category: item.category,
+      estimatedAmount: item.estimated_amount,
+      condition: item.condition,
+      estimatedValue: item.estimated_value
+    }));
+  return { ...entry, items };
 }

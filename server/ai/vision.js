@@ -26,11 +26,23 @@ export async function analyzeFoodWaste(imagePath) {
                      imagePath.toLowerCase().endsWith('.jpg') || imagePath.toLowerCase().endsWith('.jpeg') ? 'image/jpeg' :
                      'image/jpeg';
 
-    const prompt = `Analyze this image of food waste. Identify:
+    const prompt = `You are analyzing a photo for FOOD WASTE logging. Be cautious with claims of spoilage (e.g., mold).
+Rules for uncertainty and lighting:
+- Do NOT infer mold solely from bright spots, glare, reflections, specular highlights, or compression noise—especially through plastic bags or containers.
+- If distinguishing mold vs. glare/reflection is ambiguous, do NOT assert spoilage; instead include a clear disclaimer and optionally ask for a clearer photo.
+- If image quality is poor (blurry, low light, heavy reflections, occlusions), ask for a better-quality picture and reduce confidence.
+- Prefer neutral phrasing like "possible" only when supported by multiple, unambiguous visual cues (texture fuzz, green/blue/white filamentous growth, consistent across non-reflective surfaces).
+
+Analyze this image of food waste. Identify:
 1. All food items visible (be specific: e.g., "chicken breast", "mashed potatoes", "mixed vegetables")
 2. Estimate the quantity/portion size wasted for each item
-3. Assess the condition of the food (e.g., untouched, partially eaten, spoiled)
+3. Assess the condition of the food (e.g., untouched, partially eaten, spoiled). Only mark "spoiled" if clearly evident beyond lighting artifacts. If unsure, prefer "uncertain" and include disclaimer.
 4. Provide insights on why this waste might have occurred
+5. Provide a confidence score in [0,1]. If low (<0.6), include an uncertainty disclaimer and optionally request a better photo.
+6. Ensure estimate CONSISTENCY: 
+   - Use conservative, typical unit pricing (round each item to nearest $0.10) unless strong evidence suggests otherwise.
+   - Use weight ranges when uncertain; avoid large spread unless necessary.
+   - If items look identical (e.g., cookies), apply consistent per-item values across the set.
 
 Respond in JSON format with this structure:
 {
@@ -39,7 +51,7 @@ Respond in JSON format with this structure:
       "name": "item name",
       "category": "main dish/side/appetizer/dessert",
       "estimatedAmount": "description of amount",
-      "condition": "untouched/partially eaten/spoiled/expired",
+      "condition": "untouched/partially eaten/spoiled/expired/uncertain",
       "estimatedValue": estimated value in USD
     }
   ],
@@ -48,6 +60,10 @@ Respond in JSON format with this structure:
     "weight": "estimated weight in pounds/grams",
     "percentage": "estimated percentage of original portion"
   },
+  "confidence": number between 0 and 1,
+  "uncertaintyDisclaimer": "short disclaimer if visual cues could be due to lighting/reflection/poor quality; empty string otherwise",
+  "needsBetterPhoto": true or false,
+  "reasonsUncertain": ["short reasons if uncertain"],
   "notes": "observations and potential reasons for waste"
 }
 
@@ -69,10 +85,8 @@ IMPORTANT: Respond ONLY with valid JSON, no additional text before or after.`;
       console.log('Could not list models via REST API, will try default names:', err.message);
     }
     
-    // Use Gemini 1.5 Flash (faster) or 1.5 Pro (more accurate)
-    // Try different model names if one doesn't work
-    // For vision, use models that support multimodal input
-    // Note: API key from AI Studio may have limited model access
+    // Use recent Gemini multimodal models; try multiple known public names
+    // Note: API key from AI Studio or Cloud may have different availability
     let modelNames = [];
     
     // If we got available models, filter to vision-capable ones
@@ -85,7 +99,14 @@ IMPORTANT: Respond ONLY with valid JSON, no additional text before or after.`;
       console.log('Using models from API:', modelNames);
     } else {
       // Fallback to common model names - try both with and without versions
-      modelNames = ['gemini-pro-vision', 'gemini-pro', 'gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-1.5-flash-001'];
+      modelNames = [
+        'gemini-1.5-pro-latest',
+        'gemini-1.5-flash-latest',
+        'gemini-1.5-pro',
+        'gemini-1.5-flash',
+        'gemini-pro-vision',
+        'gemini-pro'
+      ];
     }
     
     console.log('Trying models:', modelNames);
