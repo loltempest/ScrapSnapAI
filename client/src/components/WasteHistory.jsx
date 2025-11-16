@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
-import { getWasteHistory } from '../services/api';
+import { getWasteHistory, clearWasteHistory } from '../services/api';
 import { format } from 'date-fns';
 
 function WasteHistory({ refreshKey }) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [clearing, setClearing] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [cleared, setCleared] = useState(false);
 
   useEffect(() => {
     loadHistory();
@@ -22,6 +25,22 @@ function WasteHistory({ refreshKey }) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleClearHistory = async () => {
+    try {
+      setClearing(true);
+      await clearWasteHistory();
+      setHistory([]);
+      setShowConfirm(false);
+      setCleared(true);
+      setError(null);
+    } catch (err) {
+      setError('Failed to clear waste history');
+      console.error(err);
+    } finally {
+      setClearing(false);
     }
   };
 
@@ -44,23 +63,77 @@ function WasteHistory({ refreshKey }) {
 
   if (history.length === 0) {
     return (
-      <div className="text-center py-12 bg-white rounded-lg shadow">
-        <div className="text-6xl mb-4">📋</div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-          No waste entries yet
-        </h3>
-        <p className="text-gray-600">
-          Start tracking food waste by uploading your first photo!
-        </p>
+      <div className="space-y-4">
+        {cleared && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+            <div className="font-semibold mb-1">✅ History Cleared Successfully</div>
+            <div className="text-sm">Refresh site to see changes</div>
+          </div>
+        )}
+        <div className="text-center py-12 bg-white rounded-lg shadow">
+          <div className="text-6xl mb-4">📋</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            No waste entries yet
+          </h3>
+          <p className="text-gray-600">
+            Start tracking food waste by uploading your first photo!
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">
-        Waste History
-      </h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-gray-900">
+          Waste History
+        </h2>
+        {history.length > 0 && (
+          <button
+            onClick={() => setShowConfirm(true)}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            🗑️ Clear History
+          </button>
+        )}
+      </div>
+
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              Clear All History?
+            </h3>
+            <p className="text-gray-600 mb-6">
+              This will permanently delete all waste entries and cannot be undone. Are you sure?
+            </p>
+            <div className="flex gap-4 justify-end">
+              <button
+                onClick={() => setShowConfirm(false)}
+                disabled={clearing}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleClearHistory}
+                disabled={clearing}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {clearing ? 'Clearing...' : 'Yes, Clear All'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {cleared && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+          <div className="font-semibold mb-1">✅ History Cleared Successfully</div>
+          <div className="text-sm">Refresh site to see changes</div>
+        </div>
+      )}
       
       <div className="grid gap-4">
         {history.map(entry => (

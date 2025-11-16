@@ -35,6 +35,11 @@ export async function getSuggestions() {
   return response.data;
 }
 
+export async function clearWasteHistory() {
+  const response = await axios.delete(`${API_BASE_URL}/waste-history`);
+  return response.data;
+}
+
 
 
 

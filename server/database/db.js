@@ -314,3 +314,14 @@ export function findEntryByImageHash(imageHash) {
     }));
   return { ...entry, items };
 }
+
+export function clearAllWasteData() {
+  data = {
+    entries: [],
+    items: [],
+    nextEntryId: 1,
+    nextItemId: 1
+  };
+  saveData();
+  return { success: true, message: 'All waste data cleared' };
+}
