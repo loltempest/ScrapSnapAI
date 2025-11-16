@@ -98,17 +98,17 @@ function App() {
 
       <nav className="bg-white/60 backdrop-blur border-b border-emerald-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="tab-bar">
+          <div  className="flex gap-20 justify-center">
             {[
-              { id: 'upload', label: '📸 Upload', icon: '📸' },
-              { id: 'history', label: '📋 History', icon: '📋' },
-              { id: 'analytics', label: '📊 Analytics', icon: '📊' },
-              { id: 'suggestions', label: '💡 Suggestions', icon: '💡' }
+              { id: 'upload', label: 'Upload'},
+              { id: 'history', label: 'History'},
+              { id: 'analytics', label: 'Analytics'},
+              { id: 'suggestions', label: 'Suggestions'}
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => switchTab(tab.id)}
-                className={`py-4 px-2 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                className={`py-4 px-2 border-b-2 font-medium text-md whitespace-nowrap transition-colors ${
                   activeTab === tab.id
                     ? 'border-emerald-600 text-emerald-700'
                     : 'border-transparent text-slate-600 hover:text-emerald-700 hover:border-emerald-300'
