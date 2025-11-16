@@ -46,7 +46,7 @@ An AI-powered web application that helps restaurants and cafeterias track and re
 
 ## Usage
 
-1. **Upload a waste photo**: Click "📸 Upload Waste" tab and either:
+1. **Upload a waste photo**: Click "Upload Waste" tab and either:
    - Take a photo using your phone's camera (works best on mobile)
    - Upload an existing image file
 
