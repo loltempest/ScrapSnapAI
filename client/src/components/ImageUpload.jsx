@@ -369,7 +369,8 @@ function ImageUpload({ onSuccess }) {
             disabled={!image || uploading}
             className="w-full py-3 px-4 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
-            {uploading ? '🔄 Analyzing...' : '🚀 Analyze Waste'}
+            {uploading ? 'Analyzing...' : 'Analyze Waste'}
+            
           </button>
         </form>
       </div>

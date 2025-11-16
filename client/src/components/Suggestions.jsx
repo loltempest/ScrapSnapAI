@@ -137,7 +137,7 @@ function Suggestions() {
         </div>
 
         <div className="text-center py-12 bg-white rounded-lg shadow">
-          <div className="text-6xl mb-4">💡</div>
+          <div className="text-6xl mb-4">🔍</div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
             More data needed
           </h3>
@@ -148,7 +148,7 @@ function Suggestions() {
 
         <div  className="bg-green-50 border border-green-200 rounded-lg p-6 mt-6">
           <h3 className="font-semibold text-green-900 mb-2">
-            💚 How These Suggestions Work
+            How These Suggestions Work
           </h3>
           <p className="text-sm text-green-800">
             Once you have 3 or more entries, we analyze the most recent ones to surface specific patterns (repeat items, spoilage, and high-value waste) and recommend targeted actions.
@@ -248,7 +248,7 @@ function Suggestions() {
 
       <div className="bg-green-50 border border-green-200 rounded-lg p-6 mt-6">
         <h3 className="font-semibold text-green-900 mb-2">
-          💚 How These Suggestions Work
+          How These Suggestions Work
         </h3>
         <p className="text-sm text-green-800">
           We analyze your last three entries to identify repeat items, spoilage, and high-value waste, then recommend focused actions (portioning, storage, or menu fit). Review and iterate regularly to reduce waste and save money.
