@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Camera, BarChart3, TrendingDown } from 'lucide-react';
 import ImageUpload from './components/ImageUpload';
 import WasteHistory from './components/WasteHistory';
 import Analytics from './components/Analytics';
@@ -34,23 +35,50 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h1 className="text-3xl font-bold text-gray-900">
-            🍽️ ScrapSnap AI
-          </h1>
-          <p className="text-sm text-gray-600 mt-1">
-            AI-powered food waste tracking and reduction for restaurants
-          </p>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-hero border-b border-emerald-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 mb-6">
+              <TrendingDown className="h-4 w-4" />
+              <span className="text-sm font-medium">AI-Powered Waste Reduction</span>
+            </div>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-emerald-500 to-lime-500 bg-clip-text text-transparent">
+              ScrapSnap AI
+            </h1>
+            <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
+              Transform food waste into actionable insights. Snap a photo, get instant AI analysis,
+              and reduce waste with data‑driven recommendations.
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <button
+                onClick={() => setActiveTab('upload')}
+                className="inline-flex items-center rounded-lg bg-emerald-600 text-white px-6 py-3 text-base font-medium shadow-md hover:shadow-lg hover:bg-emerald-700 transition-all"
+              >
+                <Camera className="mr-2 h-5 w-5" />
+                Start Analyzing
+              </button>
+              <button
+                onClick={() => setActiveTab('analytics')}
+                className="inline-flex items-center rounded-lg border border-emerald-300 text-emerald-700 px-6 py-3 text-base hover:bg-emerald-50 transition-colors"
+              >
+                <BarChart3 className="mr-2 h-5 w-5" />
+                View Dashboard
+              </button>
+            </div>
+          </div>
         </div>
-      </header>
+        {/* Decorative gradient circles */}
+        <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-emerald-200/40 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-96 h-96 bg-lime-200/40 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" />
+      </section>
 
-      <nav className="bg-white border-b border-gray-200">
+      <nav className="bg-white/60 backdrop-blur border-b border-emerald-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8 overflow-x-auto">
             {[
-              { id: 'upload', label: '📸 Upload Waste', icon: '📸' },
+              { id: 'upload', label: '📸 Upload', icon: '📸' },
               { id: 'history', label: '📋 History', icon: '📋' },
               { id: 'analytics', label: '📊 Analytics', icon: '📊' },
               { id: 'suggestions', label: '💡 Suggestions', icon: '💡' }
@@ -60,8 +88,8 @@ function App() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-4 px-2 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === tab.id
-                    ? 'border-green-500 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-emerald-600 text-emerald-700'
+                    : 'border-transparent text-slate-600 hover:text-emerald-700 hover:border-emerald-300'
                 }`}
               >
                 {tab.label}
