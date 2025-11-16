@@ -100,6 +100,6 @@ An AI-powered web application that helps restaurants and cafeterias track and re
 
 
 yo gurt
-
+gurt yo
 
 
