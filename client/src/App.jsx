@@ -86,7 +86,7 @@ function App() {
                 className="inline-flex items-center rounded-lg border border-emerald-300 text-emerald-700 px-6 py-3 text-base hover:bg-emerald-50 transition-colors"
               >
                 <BarChart3 className="mr-2 h-5 w-5" />
-                View Dashboard
+                View Analytics
               </button>
             </div>
           </div>
